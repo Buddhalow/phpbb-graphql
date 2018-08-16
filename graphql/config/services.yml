@@ -1,0 +1,63 @@
+imports:
+    - { resource: parameters.yml }
+
+services:
+    buddhalow.graphql.controller:
+        class: buddhalow\graphql\controller\main
+        arguments:
+            - '@config'
+            - '@controller.helper'
+            - '@template'
+            - '@user'
+
+    buddhalow.graphql.service:
+        class: buddhalow\graphql\service
+        arguments:
+            - '@user'
+            - '%buddhalow.graphql.tables.demo_table%'
+
+    buddhalow.graphql.listener:
+        class: buddhalow\graphql\event\main_listener
+        arguments:
+            - '@controller.helper'
+            - '@template'
+            - '@user'
+            - '%core.php_ext%'
+        tags:
+            - { name: event.listener }
+
+    buddhalow.graphql.command.demo:
+        class: buddhalow\graphql\console\command\demo
+        arguments:
+            - '@user'
+        tags:
+            - { name: console.command }
+
+    buddhalow.graphql.cron.task.demo:
+        class: buddhalow\graphql\cron\task\demo
+        arguments:
+            - '@config'
+        calls:
+            - [set_name, [cron.task.demo]]
+        tags:
+            - { name: cron.task }
+
+    buddhalow.graphql.notification.type.demo:
+        class: buddhalow\graphql\notification\type\demo
+        scope: prototype # scope MUST be prototype for this to work!
+        arguments:
+            - '@user_loader'
+            - '@dbal.conn'
+            - '@cache.driver'
+            - '@user'
+            - '@auth'
+            - '@config'
+            - '%core.root_path%'
+            - '%core.php_ext%'
+            - '%tables.notification_types%'
+            - '%tables.notifications%'
+            - '%tables.user_notifications%'
+        calls:
+            - [set_controller_helper, ['@controller.helper']]
+        tags:
+            - { name: notification.type }

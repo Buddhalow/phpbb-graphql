@@ -1,0 +1,3 @@
+buddhalow_graphql_controller:
+    path: /demo/{name}
+    defaults: { _controller: buddhalow.graphql.controller:handle }
